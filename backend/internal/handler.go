@@ -1,0 +1,176 @@
+package internal
+
+import (
+	"database/sql"
+	. "dos/db"
+	"dos/logger"
+	"encoding/json"
+	"errors"
+	"net/http"
+)
+
+type Server struct {
+	DB *Client
+}
+
+func (s *Server) isConnected(w http.ResponseWriter, r *http.Request) bool {
+	if !s.DB.IsConnected() {
+		logger.L.Error("db was disconnected")
+		http.Error(w, "database connection failed", http.StatusInternalServerError)
+		return false
+	}
+	return true
+}
+
+func (s *Server) GetUser(w http.ResponseWriter, r *http.Request) {
+	if !s.isConnected(w, r) {
+		return
+	}
+	logger.L.Debug("[USER] GET invoked")
+
+	user, err := GetUser(r.Context(), s.DB.DB)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.L.Info("no user found", "status", http.StatusNotFound)
+			//w.WriteHeader(http.StatusNotFound) //todo if no body needed, delete http.notFound(w,r)
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
+
+func (s *Server) PostUser(w http.ResponseWriter, r *http.Request) {
+	if !s.isConnected(w, r) {
+		return
+	}
+
+	logger.L.Debug("[USER] POST invoked")
+	var u User
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+
+	if err := PutUser(r.Context(), s.DB.DB, u); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(u)
+}
+
+func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	if !s.isConnected(w, r) {
+		return
+	}
+	logger.L.Debug("[USER] DELETE invoked")
+
+	if err := DeleteUser(r.Context(), s.DB.DB); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func isEmptyResponse(entries []Entry, err error) bool {
+	logger.L.Debug("found entries", "size", len(entries))
+	if len(entries) == 0 {
+		return true
+	}
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *Server) GetEntries(w http.ResponseWriter, r *http.Request) {
+	if !s.isConnected(w, r) {
+		return
+	}
+	logger.L.Debug("[ENTRIES] GET")
+
+	entries, err := GetEntries(r.Context(), s.DB.DB)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	isEmpty := isEmptyResponse(entries, err)
+	if isEmpty {
+		logger.L.Info("no entries found", "status", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode([]Entry{})
+		return
+	}
+
+	logger.L.Debug("[ENTRIES] GET result", "entries", entries)
+	json.NewEncoder(w).Encode(entries)
+}
+
+func (s *Server) PostEntry(w http.ResponseWriter, r *http.Request) {
+	if !s.isConnected(w, r) {
+		return
+	}
+
+	logger.L.Debug("[ENTRIES] POST invoked")
+	var entry Entry
+	if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+		logger.L.Error(err.Error())
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+	logger.L.Info("entry found from body", "entry", entry)
+	id, err := PutEntry(r.Context(), s.DB.DB, entry.Value)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	entry.Id = int(id)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(entry)
+}
+
+func (s *Server) DeleteEntry(w http.ResponseWriter, r *http.Request, id string) {
+	if !s.isConnected(w, r) {
+		return
+	}
+	logger.L.Debug(" [ENTRIES] DELETE invoked", "id", id)
+
+	if err := DeleteEntry(r.Context(), s.DB.DB, id); err != nil {
+		logger.L.Error("an issue occurred when entry delete", "error", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) DbDisconnect(w http.ResponseWriter, r *http.Request) {
+	s.DB.Disconnect()
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) DbConnect(w http.ResponseWriter, r *http.Request) {
+	s.DB.Connect()
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) DbStatus(w http.ResponseWriter, r *http.Request) {
+	if s.DB.IsConnected() {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	http.Error(w, "db disconnected", http.StatusInternalServerError)
+}
