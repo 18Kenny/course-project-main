@@ -1,17 +1,31 @@
 services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: test
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: backend
     environment:
       APP_PORT: 8080
-      PG_DB_URL: host.docker.internal
+      PG_DB_URL: postgres          # имя сервиса postgres
       PG_DB_PORT: 5432
       PG_DB_NAME: appdb
       PG_DB_USERNAME: admin
       PG_DB_PASSWORD: test
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - postgres
     ports:
       - "8081:8080"
 
@@ -19,6 +33,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend
     environment:
       BACKEND_HOST: backend
       BACKEND_PORT: 8080
@@ -26,3 +41,6 @@ services:
       - backend
     ports:
       - "8080:80"
+
+volumes:
+  pgdata:
