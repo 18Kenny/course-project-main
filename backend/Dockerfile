@@ -1,4 +1,4 @@
-# Build stage
+# Build stage 1
 FROM golang:1.25 AS builder
 
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN go mod download
 COPY . .
 RUN go build -o /app/backend-app ./cmd
 
-# Build stage
+# Build stage 2
 FROM debian:12-slim
 
 WORKDIR /app

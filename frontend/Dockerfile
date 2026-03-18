@@ -1,4 +1,4 @@
-# Build stage
+# Build stage 1
 FROM node:22 AS builder
 
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Build stage
+# Build stage 2
 FROM nginx:1.27-alpine
 
 WORKDIR /app

@@ -1,4 +1,5 @@
 services:
+  #DB
   postgres:
     image: postgres:16
     container_name: postgres
@@ -11,7 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-
+  #Back
   backend:
     build:
       context: ./backend
@@ -19,7 +20,7 @@ services:
     container_name: backend
     environment:
       APP_PORT: 8080
-      PG_DB_URL: postgres          # имя сервиса postgres
+      PG_DB_URL: postgres
       PG_DB_PORT: 5432
       PG_DB_NAME: appdb
       PG_DB_USERNAME: admin
@@ -28,7 +29,7 @@ services:
       - postgres
     ports:
       - "8081:8080"
-
+  #Front
   frontend:
     build:
       context: ./frontend
