@@ -46,4 +46,14 @@ services:
     environment:
       BACKEND_HOST: backend
       BACKEND_PORT: 8080
+services:
+  frontend:
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 8080
+services:
+  frontend:
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 8080
 ```
