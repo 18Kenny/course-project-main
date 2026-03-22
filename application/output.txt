@@ -60,3 +60,4 @@ frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:17 +0000] "DELETE /api/entries/14 
  Container postgres Stopping 
  Container postgres Stopped 
 
+ 

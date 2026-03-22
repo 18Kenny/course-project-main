@@ -1,0 +1,47 @@
+services:
+  #DB
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: test
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  #Back
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile Front
+    container_name: backend
+    environment:
+      APP_PORT: 8080
+      PG_DB_URL: postgres
+      PG_DB_PORT: 5432
+      PG_DB_NAME: appdb
+      PG_DB_USERNAME: admin
+      PG_DB_PASSWORD: test
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8080"
+  #Front
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile Front
+    container_name: frontend
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 8080
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
