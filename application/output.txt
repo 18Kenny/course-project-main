@@ -1,1 +1,63 @@
-empty
+ Container postgres Running 
+Attaching to backend, frontend, postgres
+ Container backend Starting 
+backend  | 2026/03/17 15:49:21 ERROR Error loading .env file
+backend  | {"time":"2026-03-17T15:49:21.890640388Z","level":"INFO","msg":"application configured to use log","level":"INFO"}
+backend  | {"time":"2026-03-17T15:49:21.890663805Z","level":"INFO","msg":"environment variable will be used","key":"PG_DB_URL","value":"postgres"}
+backend  | {"time":"2026-03-17T15:49:21.890665597Z","level":"INFO","msg":"environment variable will be used","key":"PG_DB_PORT","value":"5432"}
+backend  | {"time":"2026-03-17T15:49:21.89066668Z","level":"INFO","msg":"environment variable will be used","key":"PG_DB_USERNAME","value":"admin"}
+backend  | {"time":"2026-03-17T15:49:21.890667513Z","level":"INFO","msg":"environment variable will be used","key":"PG_DB_PASSWORD","value":"test"}
+backend  | {"time":"2026-03-17T15:49:21.890668555Z","level":"INFO","msg":"environment variable will be used","key":"PG_DB_NAME","value":"appdb"}
+backend  | {"time":"2026-03-17T15:49:21.890671055Z","level":"INFO","msg":"passed from config","dsn":"postgres://******:******@postgres:5432/appdb?sslmode=disable"}
+backend  | {"time":"2026-03-17T15:49:21.89067218Z","level":"INFO","msg":"environment variable will be used","key":"APP_PORT","value":"8080"}
+ Container backend Started 
+ Container frontend Starting 
+backend  | {"time":"2026-03-17T15:49:21.894956847Z","level":"INFO","msg":"[DB] migrations OK"}
+backend  | {"time":"2026-03-17T15:49:21.89508168Z","level":"INFO","msg":"application run and listen on","port":"8080"}
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: using the "epoll" event method
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: nginx/1.27.5
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: OS: Linux 6.12.76-linuxkit
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker processes
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 9
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 10
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 11
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 12
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 13
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 14
+ Container frontend Started 
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 15
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 16
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 17
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 18
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 19
+frontend  | 2026/03/17 15:49:21 [notice] 1#1: start worker process 20
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:06 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:06 +0000] "GET /env.js HTTP/1.1" 404 153 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:06.934755964Z","level":"INFO","msg":"http request","method":"GET","path":"/entries"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:06 +0000] "GET /api/entries HTTP/1.1" 200 103 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:06.937991131Z","level":"INFO","msg":"http request","method":"GET","path":"/user"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:06 +0000] "GET /api/user HTTP/1.1" 200 31 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:08.957310632Z","level":"INFO","msg":"http request","method":"GET","path":"/health"}
+backend   | {"time":"2026-03-17T15:50:16.332631802Z","level":"INFO","msg":"http request","method":"DELETE","path":"/entries/12"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:16 +0000] "DELETE /api/entries/12 HTTP/1.1" 204 0 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:16.949483553Z","level":"INFO","msg":"http request","method":"POST","path":"/entries"}
+backend   | {"time":"2026-03-17T15:50:16.949593636Z","level":"INFO","msg":"entry found from body","entry":{"id":0,"value":"passive lion"}}
+backend   | {"time":"2026-03-17T15:50:16.949652053Z","level":"INFO","msg":"[DB] PUT entry: passive lion"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:16 +0000] "POST /api/entries HTTP/1.1" 201 33 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:17.120357719Z","level":"INFO","msg":"http request","method":"POST","path":"/entries"}
+backend   | {"time":"2026-03-17T15:50:17.120489386Z","level":"INFO","msg":"entry found from body","entry":{"id":0,"value":"full sparrow"}}
+backend   | {"time":"2026-03-17T15:50:17.120519594Z","level":"INFO","msg":"[DB] PUT entry: full sparrow"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:17 +0000] "POST /api/entries HTTP/1.1" 201 33 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+backend   | {"time":"2026-03-17T15:50:17.996854886Z","level":"INFO","msg":"http request","method":"DELETE","path":"/entries/14"}
+frontend  | 172.18.0.1 - - [17/Mar/2026:15:50:17 +0000] "DELETE /api/entries/14 HTTP/1.1" 204 0 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0" "-"
+ Compose Stopping Gracefully Stopping... press Ctrl+C again to force
+ Container frontend Stopping 
+ Container frontend Stopped 
+ Container backend Stopping 
+ Container backend Stopped 
+ Container postgres Stopping 
+ Container postgres Stopped 
+
+ 
